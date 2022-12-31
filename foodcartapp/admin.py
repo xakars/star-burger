@@ -112,6 +112,9 @@ class ProductAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     pass
 
+@admin.register(OrderDetail)
+class OrderDetailAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
