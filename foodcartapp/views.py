@@ -73,8 +73,11 @@ def register_order(request):
 
     product_card = []
     for product in client_order['products']:
-        product_card.append(OrderDetail(order=order, product_id=product['product'], amount=product['quantity']))
-
+        product_card.append(OrderDetail(
+            order=order,
+            product_id=product['product'],
+            amount=product['quantity'])
+        )
     OrderDetail.objects.bulk_create(product_card)
 
     return Response({})
