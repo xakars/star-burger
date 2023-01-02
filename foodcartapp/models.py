@@ -173,4 +173,4 @@ class OrderDetail(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.product.name} {self.order.first_name} {self.order.last_name} {self.order.address}'
+        return f'{self.product.name} {self.order}'
