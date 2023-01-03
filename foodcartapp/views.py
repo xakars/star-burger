@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 
 from .models import Product
@@ -64,6 +65,17 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     client_order = request.data
+
+    if 'products' not in client_order:
+        content = {'error': '"products" is required parameter'}
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    if not isinstance(client_order['products'], list):
+        content = {'error': f'expected list instead of {type(client_order["products"])}'}
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    if not client_order['products']:
+        content = {'error': 'product list is empty'}
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
     order = Order.objects.create(
         address=client_order['address'],
         first_name=client_order['firstname'],
