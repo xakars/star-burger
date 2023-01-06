@@ -4,7 +4,7 @@ import phonenumbers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
-from rest_framework.serializers import CharField, ListField, DictField
+from rest_framework.serializers import CharField, ListField, DictField, IntegerField
 from rest_framework.serializers import ValidationError
 
 from .models import Product
@@ -13,7 +13,8 @@ from .models import OrderDetail
 
 
 class OrserSerializer(Serializer):
-    products = ListField(child=DictField(), allow_empty=False)
+    id = IntegerField(read_only=True)
+    products = ListField(child=DictField(), allow_empty=False, write_only=True)
     firstname = CharField()
     lastname = CharField()
     phonenumber = CharField()
@@ -93,9 +94,9 @@ def register_order(request):
 
     order = Order.objects.create(
         address=client_order['address'],
-        first_name=client_order['firstname'],
-        last_name=client_order['lastname'],
-        phone_number=client_order['phonenumber']
+        firstname=client_order['firstname'],
+        lastname=client_order['lastname'],
+        phonenumber=client_order['phonenumber']
     )
 
     product_card = []
@@ -107,4 +108,5 @@ def register_order(request):
         )
     OrderDetail.objects.bulk_create(product_card)
 
-    return Response({})
+    serializer = OrserSerializer(order)
+    return Response(serializer.data)
