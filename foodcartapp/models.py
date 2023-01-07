@@ -154,13 +154,13 @@ class OrderDetail(models.Model):
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name='orders',
+        related_name='items',
         verbose_name='заказ'
     )
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        related_name='items',
+        related_name='orders',
         verbose_name='товар',
     )
     amount = models.IntegerField('количество')
@@ -168,9 +168,7 @@ class OrderDetail(models.Model):
     class Meta:
         verbose_name = 'Элемент заказа'
         verbose_name_plural = 'Элементы заказа'
-        unique_together = [
-            ['product', 'amount']
-        ]
+
 
     def __str__(self):
         return f'{self.product.name} {self.order}'
