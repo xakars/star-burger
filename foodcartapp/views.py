@@ -99,10 +99,16 @@ def register_order(request):
         phonenumber=client_order['phonenumber']
     )
 
+    products = Product.objects.available()
+    product_price = {}
+    for product in products:
+        product_price[product.id] = product.price
     product_card = [OrderDetail(
         order=order,
         product_id=product['product'],
-        amount=product['quantity']) for product in client_order['products']]
+        amount=product['quantity'],
+        price=product['quantity'] * product_price[product['product']]
+        ) for product in client_order['products']]
     OrderDetail.objects.bulk_create(product_card)
 
     serializer = OrserSerializer(order)

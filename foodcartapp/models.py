@@ -6,7 +6,7 @@ from django.db.models import Sum, F
 
 class TotalPriceQuerySet(models.QuerySet):
     def get_total_price(self):
-        return self.annotate(total=Sum(F('items__product__price') * F('items__amount')))
+        return self.annotate(total=Sum(F('items__price') * F('items__amount')))
 
 
 class Restaurant(models.Model):
@@ -170,12 +170,17 @@ class OrderDetail(models.Model):
         related_name='orders',
         verbose_name='товар',
     )
+    price = models.DecimalField(
+        'цена',
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
     amount = models.IntegerField('количество')
 
     class Meta:
         verbose_name = 'Элемент заказа'
         verbose_name_plural = 'Элементы заказа'
-
 
     def __str__(self):
         return f'{self.product.name} {self.order}'
