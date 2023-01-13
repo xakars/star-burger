@@ -4,9 +4,12 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import Sum, F
 
 
-class TotalPriceQuerySet(models.QuerySet):
+class OrderQuerySet(models.QuerySet):
     def get_total_price(self):
         return self.annotate(total=Sum(F('items__price') * F('items__amount')))
+
+    def get_unprocessed_order(self):
+        return self.filter(status='OPEN')
 
 
 class Restaurant(models.Model):
@@ -131,6 +134,19 @@ class RestaurantMenuItem(models.Model):
 
 
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('OPEN', 'Необработанный'),
+        ('PROGRESSING', 'Готовится'),
+        ('Transit', 'В пути'),
+        ('CLOSED', 'Закрыт')
+    ]
+    status = models.CharField(
+        'Статус заказа',
+        db_index=True,
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='OPEN'
+    )
     address = models.CharField(
         'адрес',
         max_length=50
@@ -147,7 +163,7 @@ class Order(models.Model):
         'Мобильный номер',
         region='RU'
     )
-    objects = TotalPriceQuerySet.as_manager()
+    objects = OrderQuerySet.as_manager()
 
     class Meta:
         verbose_name='Заказ'

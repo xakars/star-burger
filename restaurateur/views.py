@@ -94,6 +94,7 @@ def view_restaurants(request):
 def serialize_order(order):
     return {
         'id': order.id,
+        'status': order.get_status_display(),
         'total_price': order.total,
         'customer': f'{order.firstname} {order.lastname}',
         'phonenumber': order.phonenumber,
@@ -103,7 +104,8 @@ def serialize_order(order):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.get_total_price()
+    orders = Order.objects.get_total_price()\
+                          .get_unprocessed_order()
     context = {
         'order_items': [serialize_order(order) for order in orders]
     }
