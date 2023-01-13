@@ -163,6 +163,10 @@ class Order(models.Model):
         'Мобильный номер',
         region='RU'
     )
+    comment = models.TextField(
+        'Комментарий',
+        blank=True
+    )
     objects = OrderQuerySet.as_manager()
 
     class Meta:
