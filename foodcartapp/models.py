@@ -135,6 +135,17 @@ class RestaurantMenuItem(models.Model):
 
 
 class Order(models.Model):
+    PAYMENT_METHOD_CHOICES = [
+        ('CARD', 'Электронно'),
+        ('CASH', 'Наличными')
+    ]
+    payment_method = models.CharField(
+        'Способ оплаты',
+        db_index=True,
+        max_length=20,
+        choices=PAYMENT_METHOD_CHOICES,
+        default='CASH'
+    )
     STATUS_CHOICES = [
         ('OPEN', 'Необработанный'),
         ('PROGRESSING', 'Готовится'),

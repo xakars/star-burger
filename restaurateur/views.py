@@ -99,7 +99,8 @@ def serialize_order(order):
         'customer': f'{order.firstname} {order.lastname}',
         'phonenumber': order.phonenumber,
         'address': order.address,
-        'comment': order.comment
+        'comment': order.comment,
+        'payment_method': order.get_payment_method_display()
     }
 
 
@@ -110,5 +111,4 @@ def view_orders(request):
     context = {
         'order_items': [serialize_order(order) for order in orders]
     }
-    print(context)
     return render(request, template_name='order_items.html', context=context)
