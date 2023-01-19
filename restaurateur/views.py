@@ -3,6 +3,8 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
+from itertools import chain
+
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
@@ -91,7 +93,18 @@ def view_restaurants(request):
     })
 
 
-def serialize_order(order):
+def serialize_order(order, product_in_restaurants):
+    restaurant = []
+    for item in order.items.all():
+        restaurant.append(product_in_restaurants.get(item.product.id))
+    order_can_be_prepare_in = set(chain(*restaurant))
+
+    restaurant_template = ''
+    if order.restaurant:
+        restaurant_template = f'Готовит {order.restaurant}'
+    else:
+        restaurant_template = f'Может быть приготовлен ресторанами: {", ".join(order_can_be_prepare_in)}'
+
     return {
         'id': order.id,
         'status': order.get_status_display(),
@@ -100,15 +113,24 @@ def serialize_order(order):
         'phonenumber': order.phonenumber,
         'address': order.address,
         'comment': order.comment,
-        'payment_method': order.get_payment_method_display()
+        'payment_method': order.get_payment_method_display(),
+        'restaurants': restaurant_template,
     }
 
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     orders = Order.objects.get_total_price()\
-                          .get_unprocessed_order()
+                          .get_unprocessed_order()\
+                          .prefetch_related('items__product')
+
+    products = Product.objects.prefetch_related('menu_items__restaurant')
+    product_in_restaurants = {}
+    for product in products:
+        availability = {item.restaurant_id: item.restaurant.name for item in product.menu_items.all()}
+        product_in_restaurants[product.id] = list(availability.values())
+
     context = {
-        'order_items': [serialize_order(order) for order in orders]
+        'order_items': [serialize_order(order, product_in_restaurants) for order in orders]
     }
     return render(request, template_name='order_items.html', context=context)

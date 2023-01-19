@@ -12,6 +12,9 @@ class OrderQuerySet(models.QuerySet):
     def get_unprocessed_order(self):
         return self.filter(status='OPEN')
 
+    # def get_restaurant(self):
+    #     return self.annotate(restaurants=F('items__product__menu_items'))
+
 
 class Restaurant(models.Model):
     name = models.CharField(
@@ -191,6 +194,14 @@ class Order(models.Model):
     delivered_at = models.DateTimeField(
         db_index=True,
         null=True
+    )
+    restaurant = models.ForeignKey(
+        Restaurant,
+        on_delete=models.CASCADE,
+        related_name='orders',
+        verbose_name='ресторан',
+        null=True,
+        blank=True
     )
     objects = OrderQuerySet.as_manager()
 
