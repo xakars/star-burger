@@ -1,7 +1,5 @@
 import os
-
 import dj_database_url
-
 from environs import Env
 
 
@@ -14,6 +12,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', True)
+YA_API_KEY = env('YA_API_KEY')
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 

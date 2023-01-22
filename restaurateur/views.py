@@ -3,15 +3,18 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
-from itertools import chain
-
+from geocoder import fetch_coordinates
+from geopy import distance
+from django.conf import settings
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
-
 from foodcartapp.models import Product, Restaurant
 from foodcartapp.models import Order
+
+
+YA_API_KEY = settings.YA_API_KEY
 
 
 class Login(forms.Form):
@@ -94,16 +97,26 @@ def view_restaurants(request):
 
 
 def serialize_order(order, product_in_restaurants):
-    restaurant = []
-    for item in order.items.all():
-        restaurant.append(product_in_restaurants.get(item.product.id))
-    order_can_be_prepare_in = set(chain(*restaurant))
-
-    restaurant_template = ''
+    order_coord = fetch_coordinates(YA_API_KEY, order.address)
+    restaurant = None
+    restaurants = None
     if order.restaurant:
-        restaurant_template = f'Готовит {order.restaurant}'
+        restaurant = order.restaurant
+    elif not order_coord:
+        pass
     else:
-        restaurant_template = f'Может быть приготовлен ресторанами: {", ".join(order_can_be_prepare_in)}'
+        restaurants = []
+        for item in order.items.all():
+            restaurants.append(product_in_restaurants.get(item.product.id))
+
+        order_coord = fetch_coordinates(YA_API_KEY, order.address)
+        restaurants_with_distance = {}
+        for restaurant_addresses in restaurants:
+            for addresses in restaurant_addresses:
+                for key, value in addresses.items():
+                    restaurants_with_distance[key] = round(distance.distance(value, order_coord).km, 3)
+        order_can_be_prepare_in = sorted(restaurants_with_distance.items(), key=lambda item: item[1])
+        restaurants = order_can_be_prepare_in
 
     return {
         'id': order.id,
@@ -114,7 +127,8 @@ def serialize_order(order, product_in_restaurants):
         'address': order.address,
         'comment': order.comment,
         'payment_method': order.get_payment_method_display(),
-        'restaurants': restaurant_template,
+        'restaurant':  restaurant,
+        'restaurants': restaurants,
     }
 
 
@@ -127,7 +141,10 @@ def view_orders(request):
     products = Product.objects.prefetch_related('menu_items__restaurant')
     product_in_restaurants = {}
     for product in products:
-        availability = {item.restaurant_id: item.restaurant.name for item in product.menu_items.all()}
+        availability = {
+            item.restaurant_id: {
+                item.restaurant.name: fetch_coordinates(YA_API_KEY, item.restaurant.address)} for item in product.menu_items.all()
+        }
         product_in_restaurants[product.id] = list(availability.values())
 
     context = {

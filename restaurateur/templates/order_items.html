@@ -36,7 +36,20 @@
         <td>{{item.address}}</td>
         <td>{{item.comment}}</td>
         <td>
-          <details>{{item.restaurants}}</details>
+          {% if item.restaurant %}
+            <p>Готовит {{ item.restaurant }}</p>
+          {% elif item.restaurants %}
+            <details>
+              <p>Может быть приготовлен ресторанами:</p>
+              <ul>
+                {% for rest in item.restaurants %}
+                <li>{{ rest.0 }} - {{ rest.1 }}</li>
+                {% endfor %}
+              </ul>
+            </details>
+          {% else %}
+            <p>Ошибка определения координат</p>
+          {% endif %}
         </td>
         <td> <a href="{% url "admin:foodcartapp_order_change" item.id %}?next={{request.get_full_path|urlencode}}">Редактировать</a></td>
       </tr>
