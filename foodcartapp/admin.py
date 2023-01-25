@@ -12,6 +12,7 @@ from .models import Restaurant
 from .models import RestaurantMenuItem
 from .models import Order
 from .models import OrderDetail
+from ya_geocoder.models import Place
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -115,8 +116,13 @@ class ProductAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     pass
 
+
 @admin.register(OrderDetail)
 class OrderDetailAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Place)
+class PlaceAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(Order)
