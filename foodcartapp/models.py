@@ -229,7 +229,10 @@ class OrderDetail(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(0)]
     )
-    amount = models.IntegerField('количество')
+    amount = models.PositiveSmallIntegerField(
+        'количество',
+        validators=[MinValueValidator(1)]
+    )
 
     class Meta:
         verbose_name = 'Элемент заказа'
