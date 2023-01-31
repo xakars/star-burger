@@ -150,8 +150,7 @@ class Order(models.Model):
         'Способ оплаты',
         db_index=True,
         max_length=20,
-        choices=PAYMENT_METHOD_CHOICES,
-        default='CASH'
+        choices=PAYMENT_METHOD_CHOICES
     )
     status = models.CharField(
         'Статус заказа',
