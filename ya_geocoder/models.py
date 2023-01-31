@@ -5,7 +5,8 @@ from django.utils import timezone
 class Place(models.Model):
     address = models.CharField(
         'Адрес',
-        max_length=50
+        max_length=50,
+        unique=True
     )
     lat = models.FloatField(
         'Широта',
