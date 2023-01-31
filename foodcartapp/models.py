@@ -139,6 +139,13 @@ class Order(models.Model):
         ('CARD', 'Электронно'),
         ('CASH', 'Наличными')
     ]
+    STATUS_CHOICES = [
+        ('OPEN', 'Необработанный'),
+        ('PROGRESSING', 'Готовится'),
+        ('Transit', 'В пути'),
+        ('CLOSED', 'Закрыт')
+    ]
+
     payment_method = models.CharField(
         'Способ оплаты',
         db_index=True,
@@ -146,12 +153,6 @@ class Order(models.Model):
         choices=PAYMENT_METHOD_CHOICES,
         default='CASH'
     )
-    STATUS_CHOICES = [
-        ('OPEN', 'Необработанный'),
-        ('PROGRESSING', 'Готовится'),
-        ('Transit', 'В пути'),
-        ('CLOSED', 'Закрыт')
-    ]
     status = models.CharField(
         'Статус заказа',
         db_index=True,
