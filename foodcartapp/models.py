@@ -12,9 +12,6 @@ class OrderQuerySet(models.QuerySet):
     def get_unprocessed_order(self):
         return self.filter(status='OPEN')
 
-    # def get_restaurant(self):
-    #     return self.annotate(restaurants=F('items__product__menu_items'))
-
 
 class Restaurant(models.Model):
     name = models.CharField(
