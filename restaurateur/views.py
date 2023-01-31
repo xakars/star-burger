@@ -116,8 +116,8 @@ def serialize_order(order, product_in_restaurants):
     order_coord = place.lat, place.lon
     restaurant = None
     restaurants = None
-    if order.restaurant:
-        restaurant = order.restaurant
+    if order.cook_restaurant:
+        restaurant = order.cook_restaurant
     elif not order_coord or order_coord == (0.0, 0.0):
         pass
     else:
