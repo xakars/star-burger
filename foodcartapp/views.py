@@ -4,8 +4,8 @@ import phonenumbers
 from django.db import transaction
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.serializers import Serializer
-from rest_framework.serializers import CharField, ListField, DictField, IntegerField
+from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ListField, DictField
 from rest_framework.serializers import ValidationError
 
 from .models import Product
@@ -13,13 +13,12 @@ from .models import Order
 from .models import OrderDetail
 
 
-class OrserSerializer(Serializer):
-    id = IntegerField(read_only=True)
+class OrserSerializer(ModelSerializer):
     products = ListField(child=DictField(), allow_empty=False, write_only=True)
-    firstname = CharField()
-    lastname = CharField()
-    phonenumber = CharField()
-    address = CharField()
+    class Meta:
+        model = Order
+        fields = ['id', 'firstname', 'lastname', 'address', 'phonenumber', 'products']
+        read_only_fields = ['id']
 
     def validate_phonenumber(self, value):
         phone_number = phonenumbers.parse(value, 'RU')
