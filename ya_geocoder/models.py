@@ -19,7 +19,7 @@ class Place(models.Model):
         null=True
     )
     updated = models.DateTimeField(
-        default=timezone.now(),
+        auto_now=True,
         db_index=True,
     )
 
