@@ -7,7 +7,7 @@ from django.db.models import Sum, F
 
 class OrderQuerySet(models.QuerySet):
     def get_total_price(self):
-        return self.annotate(total=Sum(F('items__price') * F('items__amount')))
+        return self.annotate(total=Sum(F('products__price') * F('products__amount')))
 
     def get_unprocessed_order(self):
         return self.filter(status='OPEN')
@@ -214,7 +214,7 @@ class OrderDetail(models.Model):
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name='items',
+        related_name='products',
         verbose_name='заказ'
     )
     product = models.ForeignKey(
