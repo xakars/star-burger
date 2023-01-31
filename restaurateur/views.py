@@ -15,9 +15,6 @@ from foodcartapp.models import Order
 from ya_geocoder.models import Place
 
 
-YA_API_KEY = settings.YA_API_KEY
-
-
 class Login(forms.Form):
     username = forms.CharField(
         label='Логин', max_length=75, required=True,
@@ -107,7 +104,7 @@ def serialize_order(order, product_in_restaurants):
     )
     if created:
         try:
-            order_coord = fetch_coordinates(YA_API_KEY, order.address)
+            order_coord = fetch_coordinates(settings.YA_API_KEY, order.address)
             place.lat, place.lon = order_coord
             place.save()
         except TypeError:
@@ -137,7 +134,7 @@ def serialize_order(order, product_in_restaurants):
                         }
                     )
                     if created:
-                        rest_coord = fetch_coordinates(YA_API_KEY, value)
+                        rest_coord = fetch_coordinates(settings.YA_API_KEY, value)
                         place.lat, place.lon = rest_coord
                         place.save()
                     rest_coord = place.lat, place.lon
