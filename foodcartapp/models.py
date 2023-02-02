@@ -180,15 +180,18 @@ class Order(models.Model):
         blank=True
     )
     registrated_at = models.DateTimeField(
+        verbose_name='дата регистрации',
         default=timezone.now,
         db_index=True,
         null=True
     )
     called_at = models.DateTimeField(
+        verbose_name='дата звонка',
         db_index=True,
         null=True
     )
     delivered_at = models.DateTimeField(
+        verbose_name='дата доставки',
         db_index=True,
         null=True
     )
