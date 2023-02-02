@@ -119,7 +119,7 @@ def serialize_order(order, product_in_restaurants):
         pass
     else:
         restaurants = []
-        for item in order.products.all():
+        for item in order.order_details.all():
             restaurants.append(product_in_restaurants.get(item.product.id))
 
         restaurants_with_distance = {}
@@ -161,7 +161,7 @@ def serialize_order(order, product_in_restaurants):
 def view_orders(request):
     orders = Order.objects.get_total_price()\
                           .get_unprocessed_order()\
-                          .prefetch_related('products__product')
+                          .prefetch_related('order_details__product')
 
     products = Product.objects.prefetch_related('menu_items__restaurant')
     product_in_restaurants = {}
