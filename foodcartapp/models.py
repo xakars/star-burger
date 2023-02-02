@@ -192,7 +192,7 @@ class Order(models.Model):
         db_index=True,
         null=True
     )
-    cook_restaurant = models.ForeignKey(
+    restaurant_cook = models.ForeignKey(
         Restaurant,
         on_delete=models.CASCADE,
         related_name='orders',
