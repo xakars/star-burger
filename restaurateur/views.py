@@ -98,8 +98,8 @@ def serialize_order(order, product_in_restaurants):
     place, created = Place.objects.get_or_create(
         address=order.address,
         defaults={
-            'lat': 0,
-            'lon': 0
+            'lat': None,
+            'lon': None
         }
     )
     if created:
@@ -129,8 +129,8 @@ def serialize_order(order, product_in_restaurants):
                     place, created = Place.objects.get_or_create(
                         address=value,
                         defaults={
-                            'lat': 0,
-                            'lon': 0
+                            'lat': None,
+                            'lon': None
                         }
                     )
                     if created:
