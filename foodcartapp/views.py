@@ -108,7 +108,7 @@ def register_order(request):
         order=order,
         product_id=product['product'],
         amount=product['quantity'],
-        price=product['quantity'] * product_price[product['product']]
+        position_price=product_price[product['product']]
         ) for product in client_order['products']]
     OrderDetail.objects.bulk_create(product_card)
 

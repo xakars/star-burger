@@ -7,7 +7,7 @@ from django.db.models import Sum, F
 
 class OrderQuerySet(models.QuerySet):
     def get_total_price(self):
-        return self.annotate(total=Sum(F('order_details__price') * F('order_details__amount')))
+        return self.annotate(total=Sum(F('order_details__position_price') * F('order_details__amount')))
 
     def get_unprocessed_order(self):
         return self.filter(status='OPEN')
@@ -226,7 +226,7 @@ class OrderDetail(models.Model):
         related_name='order_details',
         verbose_name='товар',
     )
-    price = models.DecimalField(
+    position_price = models.DecimalField(
         'цена',
         max_digits=8,
         decimal_places=2,
