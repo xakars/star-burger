@@ -18,7 +18,7 @@ class Place(models.Model):
         blank=True,
         null=True
     )
-    updated = models.DateTimeField(
+    updated_at = models.DateTimeField(
         auto_now=True,
         db_index=True,
     )
