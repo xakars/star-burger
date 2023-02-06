@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
-from geocoder import fetch_coordinates
+from ya_geocoder.geocoder import fetch_coordinates
 from geopy import distance
 from django.conf import settings
 
