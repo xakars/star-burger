@@ -104,18 +104,18 @@ def serialize_order(order, product_in_restaurants):
     )
     if created:
         try:
-            order_coord = fetch_coordinates(settings.YA_API_KEY, order.address)
-            place.lat, place.lon = order_coord
+            order_coords = fetch_coordinates(settings.YA_API_KEY, order.address)
+            place.lat, place.lon = order_coords
             place.save()
         except GeoSaveError:
-            order_coord = None
+            order_coords = None
 
-    order_coord = place.lat, place.lon
+    order_coords = place.lat, place.lon
     restaurant = None
     restaurants = None
     if order.restaurant_cook:
         restaurant = order.restaurant_cook
-    elif not order_coord or order_coord == (0.0, 0.0):
+    elif not order_coords or order_coords == (0.0, 0.0):
         pass
     else:
         restaurants = []
@@ -139,7 +139,7 @@ def serialize_order(order, product_in_restaurants):
                         place.save()
                     rest_coord = place.lat, place.lon
 
-                    restaurants_with_distance[key] = round(distance.distance(rest_coord, order_coord).km, 3)
+                    restaurants_with_distance[key] = round(distance.distance(rest_coord, order_coords).km, 3)
         order_can_be_prepare_in = sorted(restaurants_with_distance.items(), key=lambda item: item[1])
         restaurants = order_can_be_prepare_in
 
