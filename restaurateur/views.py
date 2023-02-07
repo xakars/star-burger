@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
-from ya_geocoder.geocoder import fetch_coordinates
+from ya_geocoder.geocoder import fetch_coordinates, GeoSaveError
 from geopy import distance
 from django.conf import settings
 
@@ -107,7 +107,7 @@ def serialize_order(order, product_in_restaurants):
             order_coord = fetch_coordinates(settings.YA_API_KEY, order.address)
             place.lat, place.lon = order_coord
             place.save()
-        except TypeError:
+        except GeoSaveError:
             order_coord = None
 
     order_coord = place.lat, place.lon
