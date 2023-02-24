@@ -101,14 +101,14 @@ def register_order(request):
     )
 
     products = Product.objects.available()
-    product_price = {}
+    product_prices = {}
     for product in products:
-        product_price[product.id] = product.price
+        product_prices[product.id] = product.price
     product_card = [OrderDetail(
         order=order,
         product_id=product['product'],
         amount=product['quantity'],
-        position_price=product_price[product['product']]
+        position_price=product_prices[product['product']]
         ) for product in client_order['products']]
     OrderDetail.objects.bulk_create(product_card)
 
