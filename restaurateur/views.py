@@ -94,7 +94,7 @@ def view_restaurants(request):
     })
 
 
-def serialize_order(order, product_in_restaurants):
+def serialize_order(order):
     place, created = Place.objects.get_or_create(
         address=order.address,
         defaults={
@@ -119,27 +119,28 @@ def serialize_order(order, product_in_restaurants):
         pass
     else:
         restaurants = []
-        for item in order.details.all():
-            restaurants.append(product_in_restaurants.get(item.product.id))
-
         restaurants_with_distance = {}
-        for restaurant_addresses in restaurants:
-            for addresses in restaurant_addresses:
-                for key, value in addresses.items():
-                    place, created = Place.objects.get_or_create(
-                        address=value,
-                        defaults={
-                            'lat': None,
-                            'lon': None
-                        }
-                    )
-                    if created:
-                        rest_coord = fetch_coordinates(settings.YA_API_KEY, value)
-                        place.lat, place.lon = rest_coord
-                        place.save()
-                    rest_coord = place.lat, place.lon
-
-                    restaurants_with_distance[key] = round(distance.distance(rest_coord, order_coords).km, 3)
+        for item in order.details.all():
+            for restaurant_menu_item in item.product.menu_items.all():
+                restaurants.append(restaurant_menu_item.restaurant.address)
+        for address in set(restaurants):
+            place, created = Place.objects.get_or_create(
+                            address=address,
+                            defaults={
+                                'lat': None,
+                                'lon': None
+                            }
+            )
+            if created:
+                try:
+                    rest_coord = fetch_coordinates(settings.YA_API_KEY, restaurant)
+                    place.lat, place.lon = rest_coord
+                    place.save()
+                except GeoSaveError:
+                    restaurants = None
+                    continue
+            rest_coord = place.lat, place.lon
+            restaurants_with_distance[address] = round(distance.distance(rest_coord, order_coords).km, 3)
         order_can_be_prepare_in = sorted(restaurants_with_distance.items(), key=lambda item: item[1])
         restaurants = order_can_be_prepare_in
 
@@ -161,18 +162,9 @@ def serialize_order(order, product_in_restaurants):
 def view_orders(request):
     orders = Order.objects.get_total_price()\
                           .get_unprocessed_order()\
-                          .prefetch_related('details__product')
-
-    products = Product.objects.prefetch_related('menu_items__restaurant')
-    product_in_restaurants = {}
-    for product in products:
-        availability = {
-            item.restaurant_id: {
-                item.restaurant.name: item.restaurant.address} for item in product.menu_items.all()
-        }
-        product_in_restaurants[product.id] = availability.values()
+                          .prefetch_related('details__product__menu_items__restaurant')
 
     context = {
-        'order_items': [serialize_order(order, product_in_restaurants) for order in orders]
+        'order_items': [serialize_order(order) for order in orders]
     }
     return render(request, template_name='order_items.html', context=context)
