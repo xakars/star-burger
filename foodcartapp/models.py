@@ -9,7 +9,7 @@ class OrderQuerySet(models.QuerySet):
     def get_total_price(self):
         return self.annotate(total=Sum(F('details__position_price') * F('details__amount')))
 
-    def get_unprocessed_order(self):
+    def get_unprocessed_orders(self):
         return self.filter(status='OPEN')
 
 

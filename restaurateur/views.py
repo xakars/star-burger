@@ -161,7 +161,7 @@ def serialize_order(order):
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     orders = Order.objects.get_total_price()\
-                          .get_unprocessed_order()\
+                          .get_unprocessed_orders()\
                           .prefetch_related('details__product__menu_items__restaurant')
 
     context = {
