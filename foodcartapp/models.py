@@ -3,6 +3,10 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 from django.db.models import Sum, F
+from ya_geocoder.models import Place
+from geopy import distance
+from ya_geocoder.geocoder import fetch_coordinates, GeoSaveError
+from django.conf import settings
 
 
 class OrderQuerySet(models.QuerySet):
@@ -11,6 +15,50 @@ class OrderQuerySet(models.QuerySet):
 
     def get_unprocessed_orders(self):
         return self.filter(status='OPEN')
+
+    def get_restaurants(self):
+        places = Place.objects.all()
+        for order in self:
+            order_coords = None
+            for place in places:
+                if order.address == place.address:
+                    order_coords = place.lat, place.lon
+                    break
+            if not order_coords:
+                try:
+                    order_coords = fetch_coordinates(settings.YA_API_KEY, order.address)
+                    if not order_coords:
+                        raise GeoSaveError
+                    lat, lon = order_coords
+                    Place.objects.create(address=order.address, lat=lat, lon=lon)
+                except GeoSaveError:
+                    order.restaurants = None
+                    break
+
+            restaurants_addresses = []
+            restaurants_with_distance = {}
+            for item in order.details.all():
+                for restaurant_menu_item in item.product.menu_items.all():
+                    restaurants_addresses.append(restaurant_menu_item.restaurant.address)
+
+            rest_coords = None
+            for restaurant_address in set(restaurants_addresses):
+                for place in places:
+                    if place.address == restaurant_address:
+                        rest_coords = place.lat, place.lon
+                        restaurants_with_distance[restaurant_address] = round(distance.distance(rest_coords, order_coords).km, 3)
+                if not rest_coords:
+                    try:
+                        rest_coords = fetch_coordinates(settings.YA_API_KEY, restaurant_address)
+                        if not rest_coords:
+                            raise GeoSaveError
+                        lat, lon = rest_coords
+                        Place.objects.create(address=restaurant_address, lat=lat, lon=lon)
+                    except GeoSaveError:
+                        order.restaurants = None
+            order_can_be_prepare_in = sorted(restaurants_with_distance.items(), key=lambda item: item[1])
+            order.restaurants = order_can_be_prepare_in
+        return self
 
 
 class Restaurant(models.Model):
