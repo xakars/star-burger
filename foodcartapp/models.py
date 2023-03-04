@@ -17,7 +17,12 @@ class OrderQuerySet(models.QuerySet):
         return self.filter(status='OPEN')
 
     def get_restaurants(self):
-        places = Place.objects.all()
+        orders_addresses = [order.address for order in self]
+        restaurants = Restaurant.objects.all()
+        restaurants_addresses = [restaurant.address for restaurant in restaurants]
+        addresses = orders_addresses + restaurants_addresses
+        places = Place.objects.filter(address__in=addresses)
+
         for order in self:
             order_coords = None
             for place in places:
