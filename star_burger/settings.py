@@ -119,6 +119,7 @@ INTERNAL_IPS = [
     '127.0.0.1'
 ]
 
+STATIC_ROOT = env('STATIC_ROOT', 'collected_static')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets"),
