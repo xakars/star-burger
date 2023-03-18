@@ -151,6 +151,7 @@ Parcel будет следить за файлами в каталоге `bundle
 - `YA_API_KEY` — Ваш токен от API Яндекс-геокодера
 - `ROLLBAR_TOKEN` — ваш токен от системы логирования Rollbar
 - `ENVIRONMENT` — название окружения где развернут проект(dev, prod)
+- `DATABASE_URL` — данные для подключения к db, в формате: postgres://USER:PASSWORD@HOST:PORT/NAME
 
 ## Цели проекта
 
