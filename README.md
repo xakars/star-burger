@@ -149,9 +149,14 @@ Parcel будет следить за файлами в каталоге `bundle
 - `SECRET_KEY` — секретный ключ проекта. Он отвечает за шифрование на сайте. Например, им зашифрованы все пароли на вашем сайте.
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `YA_API_KEY` — Ваш токен от API Яндекс-геокодера
+- `DATABASE_URL` — данные для подключения к db, в формате: postgres://USER:PASSWORD@HOST:PORT/NAME
+
+Опционально, для включения системы логирования rollbar, следует задать настройку:
+
+- `ROLLBAR_OPTION` — `True` или `False`
 - `ROLLBAR_TOKEN` — ваш токен от системы логирования Rollbar
 - `ENVIRONMENT` — название окружения где развернут проект(dev, prod)
-- `DATABASE_URL` — данные для подключения к db, в формате: postgres://USER:PASSWORD@HOST:PORT/NAME
+
 
 На сервере для автоматического запуска деплоя можно воспользоваться со скриптом `deploy_star_burger.sh`.
 Cкрипт умеет устанавливать библиотеки, перезапускать Gunicorn и все то, что необходимо при деплое.

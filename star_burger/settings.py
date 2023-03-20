@@ -122,12 +122,15 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "bundles"),
 ]
 
-ROLLBAR_TOKEN = env('ROLLBAR_TOKEN')
-ENVIRONMENT = env('ENVIRONMENT')
+ROLLBAR_OPTION = env.bool('ROLLBAR_OPTION', False)
 
-ROLLBAR = {
-    'access_token': ROLLBAR_TOKEN,
-    'environment': ENVIRONMENT,
-    'code_version': '1.0',
-    'root': BASE_DIR,
-}
+if ROLLBAR_OPTION:
+    ROLLBAR_TOKEN = env('ROLLBAR_TOKEN')
+    ENVIRONMENT = env('ENVIRONMENT')
+
+    ROLLBAR = {
+        'access_token': ROLLBAR_TOKEN,
+        'environment': ENVIRONMENT,
+        'code_version': '1.0',
+        'root': BASE_DIR,
+    }
