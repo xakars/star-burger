@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  django_gunicorn:
+    env_file:
+      - .env
+    ports:
+      - "8179:8179"
+    biuld:
+      context: .
+      dockerfile: Dockerfile_Django
+
