@@ -2,11 +2,26 @@ version: '3.7'
 
 services:
   django_gunicorn:
+    volumes:
+      - static:/collected_static
     env_file:
       - .env
-    ports:
-      - "8179:8179"
-    biuld:
+    build:
       context: .
       dockerfile: Dockerfile_Django
+    ports:
+      - "8000:8000"
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static:/collected_static
+    ports:
+      - "8179:8179"
+    depends_on:
+      - django_gunicorn
+
+volumes:
+  static:
+
 
