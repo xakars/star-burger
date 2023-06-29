@@ -1,9 +1,17 @@
 version: '3.7'
 
 services:
+  parcel:
+    volumes:
+      - static:/app/bundles
+    build:
+     context: .
+     dockerfile: Dockerfile_Parcel
+
   django_gunicorn:
     volumes:
-      - static:/collected_static
+      - static:/static
+      - static:/app/bundles
     env_file:
       - .env
     build:
@@ -15,7 +23,7 @@ services:
   nginx:
     build: ./nginx
     volumes:
-      - static:/collected_static
+      - static:/static
     ports:
       - "8179:8179"
     depends_on:
