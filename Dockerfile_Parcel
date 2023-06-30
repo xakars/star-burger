@@ -2,9 +2,4 @@ FROM node:12.18.2
 
 WORKDIR /app
 COPY . /app/
-RUN npm ci --dev
-
-COPY ./entrypoint_parcel.sh /
-
-ENTRYPOINT ["sh", "/entrypoint_parcel.sh"]
 
