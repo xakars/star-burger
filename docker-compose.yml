@@ -20,8 +20,9 @@ services:
 
   django_gunicorn:
     volumes:
-      - static:/static
+      - static:/app/collected_static
       - static:/app/bundles
+      - mediafiles:/mediafiles
     env_file:
       - .env
     build:
@@ -34,11 +35,13 @@ services:
       - "8000:8000"
     depends_on:
       - parcel
+      - db
 
   nginx:
     build: ./nginx
     volumes:
-      - static:/static
+      - static:/app/collected_static
+      - mediafiles:/mediafiles
     ports:
       - "8179:8179"
     depends_on:
@@ -47,5 +50,11 @@ services:
 volumes:
   static:
   postgres_data:
+  mediafiles:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/ubuntu/star-burger-products/media
 
 
