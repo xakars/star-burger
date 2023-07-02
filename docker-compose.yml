@@ -1,6 +1,13 @@
 version: '3.7'
 
 services:
+  db:
+    image: postgres
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
   parcel:
     volumes:
       - static:/app/bundles
@@ -39,5 +46,6 @@ services:
 
 volumes:
   static:
+  postgres_data:
 
 
